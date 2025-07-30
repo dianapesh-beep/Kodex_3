@@ -9,3 +9,64 @@
   <p>Denne er bare for å se at det fungerer.</p>
 </body>
 </html>
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KODEX CORE BRIDGE</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: monospace;
+      background: #000;
+      color: #0f0;
+      padding: 20px;
+    }
+    h1 {
+      color: #0ff;
+      text-align: center;
+    }
+    #log {
+      border: 1px solid #0f0;
+      padding: 10px;
+      height: 300px;
+      overflow-y: auto;
+      background: rgba(0, 0, 0, 0.85);
+    }
+    .ping {
+      color: #ff0;
+    }
+    .ok {
+      color: #0f0;
+    }
+  </style>
+</head>
+<body>
+  <h1>🌐 KODEX CORE BRIDGE 🌐</h1>
+  <div id="log">
+    <p class="ping">[INIT] Broen er aktivert – lytter etter signaler...</p>
+  </div>
+  <script>
+    const log = document.getElementById('log');
+
+    // Simulerer live-feed (placeholder før ekte kobling)
+    function addLog(message, type = 'ok') {
+      const p = document.createElement('p');
+      p.className = type;
+      p.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+      log.appendChild(p);
+      log.scrollTop = log.scrollHeight;
+    }
+
+    // Placeholder ping
+    setInterval(() => {
+      addLog('Venter på respons fra systemet...', 'ping');
+    }, 5000);
+
+    // Nøkkel placeholder – kobling til Kodex_3
+    const KEY = "🔑-KODEX_CORE-3";
+    console.log("KEY LOADED:", KEY);
+  </script>
+</body>
+</html>
