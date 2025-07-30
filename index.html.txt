@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>KODEX</title>
+</head>
+<body style="background:#000;color:#0f0;font-family:monospace;">
+  <h1>KODEX LIVE TEST</h1>
+  <p>Denne er bare for å se at det fungerer.</p>
+</body>
+</html>
