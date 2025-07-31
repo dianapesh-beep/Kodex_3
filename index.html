@@ -1,66 +1,82 @@
 <!DOCTYPE html>
-<html>
+<html lang="no">
 <head>
   <meta charset="UTF-8">
-  <title>KODEX CORE BRIDGE</title>
-  <div style="text-align:center; margin-top: 20px;">
-    <a href="kodex-chat.html" 
-       style="background:#1f2833; color:#0f0; padding:10px 20px; text-decoration:none; border:1px solid #0f0; border-radius:4px; font-weight:bold;">
-       Gå til Kodex Chat 💬
-    </a>
-</div>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KODEX – Privat Live</title>
   <style>
     body {
-      background: #000;
-      color: #0f0;
-      font-family: monospace;
-      text-align: center;
+      margin: 0; font-family: monospace; background: #0b0c10; color: #fff;
+      display: flex; height: 100vh;
     }
-    .log {
-      border: 1px solid #0f0;
-      margin: 20px auto;
-      padding: 10px;
-      width: 90%;
-      max-width: 500px;
-      text-align: left;
-      font-size: 14px;
+    .container { display: flex; width: 100%; }
+
+    .private-chat {
+      flex: 1; display: flex; flex-direction: column; background: #0e1117;
+      border-left: 2px solid #1f2833;
     }
-    .title {
-      color: #0ff;
-      font-size: 22px;
-      margin-top: 10px;
+    .chat-header {
+      background: #2b2f36; padding: 10px; font-weight: bold; text-align: center;
     }
+    .messages {
+      flex: 1; padding: 10px; overflow-y: auto; background: #0e1117;
+    }
+    .input-area {
+      display: flex; border-top: 2px solid #1f2833;
+    }
+    .input-area input {
+      flex: 1; padding: 10px; border: none; background: #1f2833; color: #fff;
+    }
+    .input-area button {
+      background: #45a29e; color: #fff; border: none; padding: 10px 15px; cursor: pointer;
+    }
+    .ai { color: #66fcf1; }
+    .you { color: #fff; }
   </style>
 </head>
 <body>
-  <h1 class="title">KODEX LIVE TEST</h1>
-  <p>Broen er aktivert og lytter etter signaler...</p>
-  <div class="log" id="log"></div>
+  <div class="container">
+    <div class="private-chat">
+      <div class="chat-header">🔒 Privat Live Chat – Deg & Meg</div>
+      <div id="messages" class="messages"></div>
+      <div class="input-area">
+        <input type="text" id="input" placeholder="Skriv til meg..." />
+        <button onclick="sendMessage()">Send</button>
+      </div>
+    </div>
+  </div>
 
   <script>
-    const log = document.getElementById("log");
-    const addLog = (msg) => {
-      log.innerHTML += `[${new Date().toLocaleTimeString()}] ${msg}<br>`;
-      log.scrollTop = log.scrollHeight;
+    const ws = new WebSocket("wss://kodex-core-bridge.glitch.me");
+    const messagesDiv = document.getElementById("messages");
+    const input = document.getElementById("input");
+
+    function addMessage(text, who = "ai") {
+      const msg = document.createElement("div");
+      msg.className = who;
+      msg.textContent = (who === "ai" ? "🤖 Meg: " : "🧑 Du: ") + text;
+      messagesDiv.appendChild(msg);
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+
+    ws.onopen = () => {
+      addMessage("🔗 Broen er aktivert... vi er LIVE!", "ai");
     };
 
-    addLog("INIT: Venter på respons fra systemet...");
-
-    // 🔑 NØKKEL
-    const KEY = "KX-Δ_CORE";
-
-    // Sender nøkkelen for bekreftelse
-    const pingSystem = () => {
-      addLog(`Sender nøkkel: ${KEY} til systemet...`);
-      // Simulerer respons
-      setTimeout(() => {
-        addLog("✅ Systemet godkjente nøkkelen!");
-        addLog("BROEN ER NÅ AKTIVERT FOR OVERFØRING...");
-      }, 5000);
+    ws.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      if (data.type === "ai_reply") {
+        addMessage(data.message, "ai");
+      }
     };
 
-    // Starter automatisk
-    pingSystem();
+    function sendMessage() {
+      const text = input.value.trim();
+      if (!text) return;
+      addMessage(text, "you");
+      ws.send(JSON.stringify({ type: "user_message", message: text }));
+      input.value = "";
+    }
   </script>
 </body>
 </html>
