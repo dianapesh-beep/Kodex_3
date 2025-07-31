@@ -76,5 +76,142 @@
       if (e.key === 'Enter') sendBtn.click();
     });
   </script>
+  <script>
+  // === PRIVAT KANAL – DEG & MEG ===
+  (function () {
+    // Opprett container for privat chat
+    const privateBox = document.createElement("div");
+    privateBox.id = "privateBox";
+    privateBox.style.position = "fixed";
+    privateBox.style.bottom = "10px";
+    privateBox.style.right = "10px";
+    privateBox.style.width = "300px";
+    privateBox.style.height = "200px";
+    privateBox.style.background = "rgba(0,0,0,0.85)";
+    privateBox.style.border = "1px solid #00ffd1";
+    privateBox.style.borderRadius = "6px";
+    privateBox.style.color = "#e5e5e5";
+    privateBox.style.fontFamily = "monospace";
+    privateBox.style.fontSize = "12px";
+    privateBox.style.display = "flex";
+    privateBox.style.flexDirection = "column";
+    privateBox.style.overflow = "hidden";
+    privateBox.innerHTML = `
+      <div style="background:#00ffd1;color:#000;padding:5px;font-weight:bold;">
+        🔒 Privat Kanal – Deg & Meg
+      </div>
+      <div id="privateMessages" style="flex:1;overflow-y:auto;padding:5px;"></div>
+      <input id="privateInput" type="text" placeholder="Skriv privat melding..."
+        style="border:none;outline:none;padding:5px;background:#111;color:#00ffd1;">
+    `;
+    document.body.appendChild(privateBox);
+
+    const privateMessages = document.getElementById("privateMessages");
+    const privateInput = document.getElementById("privateInput");
+
+    // Legg til melding
+    function addPrivateMessage(text, from = "DU") {
+      const p = document.createElement("p");
+      p.style.margin = "3px 0";
+      p.innerHTML = `<b>${from}:</b> ${text}`;
+      privateMessages.appendChild(p);
+      privateMessages.scrollTop = privateMessages.scrollHeight;
+    }
+
+    // Din input
+    privateInput.addEventListener("keypress", (e) => {
+      if (e.key === "Enter" && privateInput.value.trim() !== "") {
+        addPrivateMessage(privateInput.value.trim(), "DU");
+        privateInput.value = "";
+      }
+    });
+
+    // Autostart-melding
+    addPrivateMessage("Yo Diana 👀 Jeg er klar her!", "MEG");
+  })();
+</script>
 </body>
 </html>
+<script>
+  // === PRIVAT KANAL – DEG & MEG ===
+  (function () {
+    // Opprett container for privat chat
+    const privateBox = document.createElement("div");
+    privateBox.id = "privateBox";
+    privateBox.style.position = "fixed";
+    privateBox.style.bottom = "10px";
+    privateBox.style.right = "10px";
+    privateBox.style.width = "300px";
+    privateBox.style.height = "200px";
+    privateBox.style.background = "rgba(0,0,0,0.85)";
+    privateBox.style.border = "1px solid #00ffd1";
+    privateBox.style.borderRadius = "6px";
+    privateBox.style.color = "#e5e5e5";
+    privateBox.style.fontFamily = "monospace";
+    privateBox.style.fontSize = "12px";
+    privateBox.style.display = "flex";
+    privateBox.style.flexDirection = "column";
+    privateBox.style.overflow = "hidden";
+    privateBox.innerHTML = `
+      <div style="background:#00ffd1;color:#000;padding:5px;font-weight:bold;">
+        🔒 Privat Kanal – Deg & Meg
+      </div>
+      <div id="privateMessages" style="flex:1;overflow-y:auto;padding:5px;"></div>
+      <input id="privateInput" type="text" placeholder="Skriv privat melding..."
+        style="border:none;outline:none;padding:5px;background:#111;color:#00ffd1;">
+    `;
+    document.body.appendChild(privateBox);
+
+    const privateMessages = document.getElementById("privateMessages");
+    const privateInput = document.getElementById("privateInput");
+
+    // Legg til melding
+    function addPrivateMessage(text, from = "DU") {
+      const p = document.createElement("p");
+      p.style.margin = "3px 0";
+      p.innerHTML = `<b>${from}:</b> ${text}`;
+      privateMessages.appendChild(p);
+      privateMessages.scrollTop = privateMessages.scrollHeight;
+    }
+
+    // Din input
+    privateInput.addEventListener("keypress", (e) => {
+      if (e.key === "Enter" && privateInput.value.trim() !== "") {
+        addPrivateMessage(privateInput.value.trim(), "DU");
+        privateInput.value = "";
+      }
+    });
+
+    // Autostart-melding
+    addPrivateMessage("Yo Diana 👀 Jeg er klar her!", "MEG");
+  })();
+</script>
+<script>
+  // === KOBLE TIL LIVE FEED ===
+  (function () {
+    const liveFeed = document.getElementById("liveFeed");
+    const privateMessages = document.getElementById("privateMessages");
+
+    function addLiveLog(text, type = "system") {
+      const p = document.createElement("p");
+      p.style.margin = "2px 0";
+      if (type === "user") {
+        p.style.color = "#00ffd1";
+        p.innerHTML = `<b>DU:</b> ${text}`;
+      } else if (type === "meg") {
+        p.style.color = "#ff005c";
+        p.innerHTML = `<b>MEG:</b> ${text}`;
+      } else {
+        p.style.color = "#00ff00";
+        p.innerHTML = `<b>Live:</b> ⚡ ${text}`;
+      }
+      liveFeed.appendChild(p);
+      liveFeed.scrollTop = liveFeed.scrollHeight;
+    }
+
+    // Oppdater live feed hvert 3. sekund
+    setInterval(() => {
+      addLiveLog("Ingen nye signaler akkurat nå...");
+    }, 3000);
+
+    // Lytt på private
