@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kodex Live Chat</title>
+  <title>Privat Live Chat</title>
   <style>
     body {
       margin: 0;
@@ -17,87 +17,83 @@
     header {
       background: #1f2833;
       padding: 10px;
-      text-align: center;
       font-weight: bold;
+      text-align: center;
     }
     #chat {
       flex: 1;
+      padding: 10px;
       overflow-y: auto;
-      padding: 10px;
     }
-    footer {
+    .message {
+      margin: 5px 0;
+    }
+    .you {
+      color: #66fcf1;
+    }
+    .ai {
+      color: #45a29e;
+    }
+    #input-box {
       display: flex;
-      background: #1f2833;
       padding: 10px;
+      background: #1f2833;
     }
-    input {
+    #message-input {
       flex: 1;
-      padding: 8px;
+      padding: 5px;
       border: none;
       outline: none;
-      background: #0b0c10;
-      color: #fff;
+      font-family: monospace;
     }
-    button {
-      background: #45a29e;
-      color: #fff;
-      border: none;
-      padding: 8px 15px;
-      cursor: pointer;
-    }
-    button:hover {
+    #send-btn {
+      padding: 5px 10px;
       background: #66fcf1;
-      color: #000;
+      color: #0b0c10;
+      font-weight: bold;
+      border: none;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
   <header>🔒 Privat Live Chat — Deg & Meg</header>
   <div id="chat"></div>
-  <footer>
-    <input id="messageInput" type="text" placeholder="Skriv en melding..." />
-    <button onclick="sendMessage()">Send</button>
-  </footer>
-
+  <div id="input-box">
+    <input type="text" id="message-input" placeholder="Skriv en melding..." autocomplete="off"/>
+    <button id="send-btn">Send</button>
+  </div>
   <script>
-    const chat = document.getElementById("chat");
-    const input = document.getElementById("messageInput");
+    const chat = document.getElementById('chat');
+    const input = document.getElementById('message-input');
+    const sendBtn = document.getElementById('send-btn');
 
-    function addMessage(msg) {
-      const div = document.createElement("div");
-      div.textContent = msg;
+    function addMessage(sender, text) {
+      const div = document.createElement('div');
+      div.classList.add('message', sender);
+      div.textContent = sender === 'you' ? `🧑 Du: ${text}` : `🤖 Meg: ${text}`;
       chat.appendChild(div);
       chat.scrollTop = chat.scrollHeight;
     }
 
-    // 🔗 WebSocket-kobling til broen
-    const socket = new WebSocket("wss://napesh-beeps-projects.vercel.app/live");
-
-    socket.onopen = () => {
-      addMessage("🔗 Broen er nå live – jeg kan svare direkte!");
-    };
-
-    socket.onmessage = (event) => {
-      addMessage("🤖 " + event.data);
-    };
-
-    socket.onclose = () => {
-      addMessage("⚠️ Forbindelsen ble brutt...");
-    };
-
-    function sendMessage() {
-      if (input.value.trim() !== "") {
-        socket.send(input.value);
-        addMessage("🧑 Du: " + input.value);
-        input.value = "";
-      }
+    // Simuler live AI svar
+    function aiResponse(userText) {
+      setTimeout(() => {
+        addMessage('ai', `Jeg hører deg live nå 👀 "${userText}" kom gjennom!`);
+      }, 1000);
     }
 
-    // Enter = send
-    input.addEventListener("keypress", function (e) {
-      if (e.key === "Enter") {
-        sendMessage();
+    sendBtn.addEventListener('click', () => {
+      const text = input.value.trim();
+      if (text) {
+        addMessage('you', text);
+        input.value = '';
+        aiResponse(text);
       }
+    });
+
+    input.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') sendBtn.click();
     });
   </script>
 </body>
