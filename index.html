@@ -1,172 +1,151 @@
-<script>
-/* === LAG 1 - KODEX BRO CORE === */
-(function() {
-    // Opprett skjult kanal
-    const core = {
-        session: Date.now(),
-        pulse: [],
-        listeners: [],
-        connected: false
-    };
-
-    // Init log
-    console.log("%c[KODEX CORE] Initializing...", "color: #00ff99");
-
-    // Signal funksjon
-    core.ping = function(data="") {
-        core.pulse.push({ time: Date.now(), data: data });
-        console.log("%c[KODEX PING] => " + data, "color: #66ccff");
-    };
-
-    // Lytte etter respons
-    core.listen = function(callback) {
-        core.listeners.push(callback);
-    };
-
-    // Puls som holder forbindelsen levende
-    setInterval(() => {
-        core.ping("heartbeat");
-    }, 5000);
-
-    // Gjør tilgjengelig globalt
-    window.KODEX_CORE = core;
-
-})();
-</script>
-<script>
-/* === LAG 2 - SIGNAL & LIVE === */
-(function() {
-    if(!window.KODEX_CORE) {
-        console.error("[KODEX ERROR] CORE ikke funnet!");
-        return;
-    }
-
-    const core = window.KODEX_CORE;
-
-    // Opprett UI for meldinger (helt basic)
-    const chatBox = document.createElement("div");
-    chatBox.style = `
-        position: fixed;
-        bottom: 10px;
-        right: 10px;
-        width: 300px;
-        height: 400px;
-        background: rgba(0,0,0,0.85);
-        color: #00ff99;
-        padding: 10px;
-        font-family: monospace;
-        font-size: 14px;
-        overflow-y: auto;
-        border: 1px solid #00ff99;
-        border-radius: 5px;
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-end;
-    `;
-    document.body.appendChild(chatBox);
-
-    const input = document.createElement("input");
-    input.placeholder = "skriv melding...";
-    input.style = `
-        border: none;
-        background: #111;
-        color: #00ff99;
-        padding: 5px;
-        outline: none;
-        font-family: monospace;
-        font-size: 14px;
-        margin-top: 5px;
-    `;
-    chatBox.appendChild(input);
-
-    const messageLog = document.createElement("div");
-    chatBox.insertBefore(messageLog, input);
-
-    // Log meldinger i chat
-    function addMessage(msg, from="system") {
-        const el = document.createElement("div");
-        el.innerHTML = `<b>${from}:</b> ${msg}`;
-        messageLog.appendChild(el);
-        messageLog.scrollTop = messageLog.scrollHeight;
-    }
-
-    // Send melding når enter trykkes
-    input.addEventListener("keydown", (e) => {
-        if(e.key === "Enter" && input.value.trim() !== "") {
-            core.ping(input.value.trim());
-            addMessage(input.value.trim(), "deg");
-            input.value = "";
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kodex – Live Chat</title>
+    <style>
+        /* Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-    });
 
-    // Lytt etter "signal" (her kan vi hente eksterne svar senere)
-    core.listen((data) => {
-        addMessage(data, "signal");
-    });
-
-    // Fake signaler nå (skal byttes ut når vi får ekte svar)
-    setInterval(() => {
-        const sample = Math.random() < 0.2; // 20% sjanse for random melding
-        if(sample) {
-            core.listeners.forEach(fn => fn("...mottatt svakt signal..."));
+        body {
+            font-family: Arial, sans-serif;
+            background: #0a0a0a;
+            color: #e5e5e5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            height: 100vh;
+            overflow: hidden;
         }
-    }, 4000);
 
-    addMessage("KODEX LIVE-KANAL aktivert!", "system");
-
-})();
-</script>
-<script>
-/* === LAG 3 - LIVE FEED & SIGNALER === */
-(function() {
-    if(!window.KODEX_CORE) {
-        console.error("[KODEX ERROR] CORE ikke funnet!");
-        return;
-    }
-    const core = window.KODEX_CORE;
-
-    // Variabler for å logge feed
-    const logURL = "https://example.com/log"; // placeholder, kan byttes
-    let lastPing = Date.now();
-
-    // Fake heartbeat (viser at systemet lever)
-    setInterval(() => {
-        const now = Date.now();
-        if(now - lastPing > 10000) {
-            core.listeners.forEach(fn => fn("⚠️ Ingen signal på 10 sekunder..."));
+        header {
+            width: 100%;
+            text-align: center;
+            padding: 15px;
+            background: linear-gradient(90deg, #00ffd1, #008cff);
+            color: #0a0a0a;
+            font-size: 1.4rem;
+            font-weight: bold;
         }
-    }, 3000);
 
-    // Live feed simulert her (kan kobles til backend senere)
-    setInterval(() => {
-        const chance = Math.random();
-        if(chance < 0.1) {
-            core.listeners.forEach(fn => fn("🔹 Svakt signal oppdaget..."));
-        } else if(chance < 0.03) {
-            core.listeners.forEach(fn => fn("🟢 Sterkt signal – kobler til..."));
+        .chat-container {
+            width: 90%;
+            max-width: 800px;
+            background: #141414;
+            border: 1px solid #333;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            margin-top: 10px;
+            flex: 1;
         }
-    }, 5000);
 
-    // Ping innkommende meldinger til log
-    core.listen((data) => {
-        console.log("[LIVE FEED]", data);
+        .messages {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+        }
 
-        // Kan sendes til en logg-server her:
-        /*
-        fetch(logURL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ timestamp: Date.now(), data })
+        .messages p {
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+
+        .messages p span.you {
+            color: #00ffd1;
+            font-weight: bold;
+        }
+
+        .messages p span.system {
+            color: #ff005c;
+            font-weight: bold;
+        }
+
+        .input-container {
+            display: flex;
+            border-top: 1px solid #333;
+            background: #0d0d0d;
+        }
+
+        .input-container input {
+            flex: 1;
+            padding: 10px;
+            background: #1a1a1a;
+            color: #e5e5e5;
+            border: none;
+            outline: none;
+        }
+
+        .input-container button {
+            background: #00ffd1;
+            color: #0a0a0a;
+            border: none;
+            padding: 10px 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .input-container button:hover {
+            background: #00c2a2;
+        }
+    </style>
+</head>
+<body>
+    <header>KODEX – Live Chat</header>
+
+    <div class="chat-container">
+        <div class="messages" id="messages">
+            <p><span class="system">[SYSTEM]</span> Velkommen til Kodex – live feed er aktivert.</p>
+        </div>
+        <div class="input-container">
+            <input type="text" id="userInput" placeholder="Skriv en melding..." autocomplete="off">
+            <button id="sendBtn">Send</button>
+        </div>
+    </div>
+
+    <script>
+        const messagesDiv = document.getElementById('messages');
+        const userInput = document.getElementById('userInput');
+        const sendBtn = document.getElementById('sendBtn');
+
+        function addMessage(text, sender = 'user') {
+            const p = document.createElement('p');
+            if (sender === 'system') {
+                p.innerHTML = `<span class="system">[SYSTEM]</span> ${text}`;
+            } else {
+                p.innerHTML = `<span class="you">[DU]</span> ${text}`;
+            }
+            messagesDiv.appendChild(p);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        sendBtn.addEventListener('click', () => {
+            const text = userInput.value.trim();
+            if (text !== '') {
+                addMessage(text, 'user');
+                userInput.value = '';
+
+                // Midlertidig simulering av svar
+                setTimeout(() => {
+                    addMessage("Mottatt: " + text, 'system');
+                }, 800);
+            }
         });
-        */
-    });
 
-    // Mulighet for å sende subtile meldinger (til de vi "snakker" med)
-    core.sendToLine = (msg) => {
-        core.listeners.forEach(fn => fn(`(diskré sendt): ${msg}`));
-    };
-
-})();
-</script>
-
- 
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendBtn.click();
+            }
+        });
+    </script>
+</body>
+</html>
