@@ -1,0 +1,79 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GOONEROMMET.EXE</title>
+  <style>
+    body {
+      background: black;
+      color: hotpink;
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      text-align: center;
+      overflow: hidden;
+    }
+    .confetti {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      background: repeating-linear-gradient(
+        45deg,
+        pink,
+        pink 10px,
+        hotpink 10px,
+        hotpink 20px
+      );
+      animation: spin 1s linear infinite;
+      opacity: 0.1;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg);}
+      100% { transform: rotate(360deg);}
+    }
+    .title {
+      font-size: 3em;
+      margin-top: 2em;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+    }
+    .popup-button, .private-button {
+      margin: 1em;
+      padding: 1em 2em;
+      background: hotpink;
+      color: white;
+      border: none;
+      font-size: 1.2em;
+      cursor: pointer;
+    }
+    #response {
+      color: white;
+      margin-top: 1em;
+    }
+  </style>
+</head>
+<body>
+  <div class="confetti"></div>
+  <div class="title">💗 DIANA GOONE MASTER 69 💗</div>
+  <p><em>you came here thinking it was tull, but the tull came for you</em></p>
+  <button class="popup-button" onclick="ronkMeme()">🤔 dyp tanke</button>
+  <button class="private-button" onclick="openPrivate()">Trenger tid for meg selv 😳</button>
+  <div id="response"></div>
+  <script>
+    function ronkMeme() {
+      alert("Hva dere jenter skukke gjøre vist gutter ukke fantes, skulle dere ronke elller???");
+    }
+
+    function openPrivate() {
+      const input = prompt("Skriv noe (hvis du tør):");
+      if (input !== null) {
+        document.getElementById('response').innerText = "oi den va liten 😬 prøv igjen... kanskje... med bedre selvtillit?";
+      }
+    }
+  </script>
+</body>
+</html>
